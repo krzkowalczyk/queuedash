@@ -18,6 +18,7 @@ const queueConfigSchema = z.object({
         clusterNodes: z
           .array(z.object({ host: z.string(), port: z.number() }))
           .optional(),
+        prefix: z.string().optional(),
       })
       .refine(
         (data) => data.connectionUrl || data.clusterNodes,
@@ -57,6 +58,7 @@ const getQueuesFromConfig = () => {
 
       const queue = new BullMQQueue(queueConfig.name, {
         connection: new Cluster(queueConfig.clusterNodes),
+        ...(queueConfig.prefix && { prefix: queueConfig.prefix }),
       });
       return {
         queue,
@@ -80,6 +82,7 @@ const getQueuesFromConfig = () => {
           url: queueConfig.connectionUrl,
           ...(usesTls && { tls: {} }),
         },
+        ...(queueConfig.prefix && { prefix: queueConfig.prefix }),
       });
       return {
         queue,
