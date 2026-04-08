@@ -60,6 +60,12 @@ function buildQueues(configQueues) {
       return { queue, displayName: queueConfig.displayName, type: "bullmq" };
     }
 
+    if (!queueConfig.connectionUrl) {
+      throw new Error(
+        `Queue "${queueConfig.name}" is missing connectionUrl and clusterNodes`,
+      );
+    }
+
     const usesTls = queueConfig.connectionUrl.startsWith("rediss://");
 
     if (queueConfig.type === "bullmq") {
